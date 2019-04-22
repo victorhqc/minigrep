@@ -26,3 +26,42 @@ impl Config {
         Ok(Config { query, filename })
     }
 }
+
+#[cfg(test)]
+mod tesst {
+    use super::*;
+
+    #[test]
+    fn it_creates_a_new_config() {
+        let query = String::from("Foo");
+        let filename = String::from("bar.txt");
+
+        let args = [
+            String::from("some/binary"),
+            query.clone(),
+            filename.clone(),
+        ];
+        let result = Config::new(&args).unwrap();
+
+        assert_eq!(result.query, query);
+
+        assert_eq!(result.filename, filename)
+    }
+
+    #[test]
+    fn it_fails_when_not_enough_arguments() -> Result<(), String> {
+        let query = String::from("Foo");
+
+        let args = [
+            String::from("some/binary"),
+            query.clone(),
+        ];
+
+        if let Err(e) = Config::new(&args) {
+            assert_eq!(e, "Not enough arguments.");
+            Ok(())
+        } else {
+            Err(String::from("Config::new() does not fail when missing arguments"))
+        }
+    }
+}
