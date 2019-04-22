@@ -38,7 +38,7 @@ mod tesst {
     }
 
     #[test]
-    fn config_is_case_sensitive() {
+    fn case_sensitive() {
         let query = String::from("Foo");
         let filename = String::from("bar.txt");
 
@@ -53,7 +53,7 @@ mod tesst {
     }
 
     #[test]
-    fn config_is_case_insensitive() {
+    fn case_insensitive() {
         let query = String::from("Foo");
         let filename = String::from("bar.txt");
 
