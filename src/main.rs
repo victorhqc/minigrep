@@ -6,7 +6,9 @@ use minigrep::Config;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let config = Config::new(&args).unwrap_or_else(|err| {
+    let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+    let config = Config::new(&args, case_sensitive).unwrap_or_else(|err| {
         println!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
