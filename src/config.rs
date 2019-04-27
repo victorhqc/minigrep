@@ -5,13 +5,20 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(args: &[String], case_sensitive: bool) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("Not enough arguments.");
-        }
+    pub fn new<T>(mut args: T, case_sensitive: bool) -> Result<Config, &'static str>
+    where T: Iterator<Item = String> {
+        // We Discard the first argument.
+        args.next();
 
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
+
+        let filename = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file name"),
+        };
 
         Ok(Config { query, filename, case_sensitive })
     }
@@ -26,12 +33,13 @@ mod tesst {
         let query = String::from("Foo");
         let filename = String::from("bar.txt");
 
-        let args = [
+        let args = vec![
             String::from("some/binary"),
             query.clone(),
             filename.clone(),
         ];
-        let result = Config::new(&args, false).unwrap();
+
+        let result = Config::new(args.into_iter(), false).unwrap();
 
         assert_eq!(result.query, query);
         assert_eq!(result.filename, filename)
@@ -42,12 +50,12 @@ mod tesst {
         let query = String::from("Foo");
         let filename = String::from("bar.txt");
 
-        let args = [
+        let args = vec![
             String::from("some/binary"),
             query.clone(),
             filename.clone(),
         ];
-        let result = Config::new(&args, true).unwrap();
+        let result = Config::new(args.into_iter(), true).unwrap();
 
         assert!(result.case_sensitive);
     }
@@ -57,27 +65,41 @@ mod tesst {
         let query = String::from("Foo");
         let filename = String::from("bar.txt");
 
-        let args = [
+        let args = vec![
             String::from("some/binary"),
             query.clone(),
             filename.clone(),
         ];
-        let result = Config::new(&args, false).unwrap();
+        let result = Config::new(args.into_iter(), false).unwrap();
 
         assert!(!result.case_sensitive);
     }
 
     #[test]
-    fn fails_when_not_enough_arguments() -> Result<(), String> {
+    fn fails_when_no_query() -> Result<(), String> {
+        let args = vec![
+            String::from("some/binary"),
+        ];
+
+        if let Err(e) = Config::new(args.into_iter(), true) {
+            assert_eq!(e, "Didn't get a query string");
+            Ok(())
+        } else {
+            Err(String::from("Config::new() does not fail when missing arguments"))
+        }
+    }
+
+    #[test]
+    fn fails_when_no_file() -> Result<(), String> {
         let query = String::from("Foo");
 
-        let args = [
+        let args = vec![
             String::from("some/binary"),
             query.clone(),
         ];
 
-        if let Err(e) = Config::new(&args, true) {
-            assert_eq!(e, "Not enough arguments.");
+        if let Err(e) = Config::new(args.into_iter(), true) {
+            assert_eq!(e, "Didn't get a file name");
             Ok(())
         } else {
             Err(String::from("Config::new() does not fail when missing arguments"))
