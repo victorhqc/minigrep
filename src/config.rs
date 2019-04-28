@@ -5,6 +5,16 @@ pub struct Config {
 }
 
 impl Config {
+    /// Create Configuration for minigrep.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::env;
+    /// use minigrep::Config;
+    ///
+    /// Config::new(env::args(), false);
+    /// ```
     pub fn new<T>(mut args: T, case_sensitive: bool) -> Result<Config, &'static str>
     where T: Iterator<Item = String> {
         // We Discard the first argument.

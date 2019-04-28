@@ -1,7 +1,7 @@
 use std::env;
 use std::process;
 
-use minigrep::config::Config;
+use minigrep::Config;
 
 fn main() {
     let case_sensitive = env::var("CASE_INSENSITIVE").is_err();

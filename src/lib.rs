@@ -1,9 +1,33 @@
 use std::error::Error;
 use std::fs;
 
-pub mod config;
-use config::Config;
+mod config;
+pub use config::Config;
 
+/// Run minigrep
+///
+/// # Examples
+///
+/// ```
+/// use minigrep::Config;
+/// use std::process;
+///
+/// let args = vec![
+///     String::from("some/binary"),
+///     String::from("body"),
+///     String::from("poem.txt"),
+/// ];
+///
+/// let config = Config::new(args.into_iter(), false).unwrap_or_else(|err| {
+///     eprintln!("Problem parsing arguments: {}", err);
+///     process::exit(1);
+/// });
+/// if let Err(e) = minigrep::run(config) {
+///     eprintln!("Application error: {}", e);
+///
+///     process::exit(1);
+/// }
+/// ```
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.filename)?;
 
